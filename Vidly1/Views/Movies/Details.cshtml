@@ -1,0 +1,24 @@
+﻿@model Vidly1.Models.Movie
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ 
+    // Variables ...
+    DateTime releaseDate = DateTime.Parse(Model.ReleaseDate.ToString()).Date;
+    var longReleaseDate = releaseDate.ToLongDateString();
+
+}
+
+
+<h2>@Model.Name</h2>
+<ul>
+    <li>Genre: @Model.Genre.Name</li>
+    <li>Release Date: @longReleaseDate</li>
+    <li>Date Added: @Model.DateAdded</li>
+    <li>Number in Stock: @Model.NumberInStock</li>
+</ul>
+
+
+
