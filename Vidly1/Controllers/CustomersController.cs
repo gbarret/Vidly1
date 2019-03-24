@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Vidly1.Models;
+using Vidly1.ViewModels;
 
 namespace Vidly1.Controllers
 {
@@ -49,6 +50,80 @@ namespace Vidly1.Controllers
 
             //return View(detailsViewModel);
             return View(customer);
+        }
+
+       public ActionResult Edit(int id)
+        {
+            // Getting data from DB ...
+            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+
+            // Checking if customer exist in ghe DB ...
+
+            if (customer == null)
+                return HttpNotFound();
+
+            // I need the View Model ...
+            var viewModel = new CustomerFormViewModel
+            {
+                Customer = customer,
+                // Initializing MembershipTypes used for the DropDown ...
+                MembershipTypes = _context.MembershipTypes.ToList()
+            };
+
+            // Override the View to go to "CustomerForm" instead of using the default "Edit" ...
+            return View("CustomerForm", viewModel);
+        }
+
+        public ActionResult New()
+        {
+            // Initializing MembershipTypes used for the DropDown ...
+            var membershipTypes = _context.MembershipTypes.ToList();
+
+            var viewModel = new CustomerFormViewModel
+            {
+                MembershipTypes = membershipTypes,
+            };
+
+            // Override the View to go to "CustomerForm" instead of using the default "Edit"...
+            // return View(viewModel);
+            return View("CustomerForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Customer customer)
+        {
+            if (customer.Id == 0)
+                _context.Customers.Add(customer);
+            else
+            {
+                // Getting Data from Db ...
+                var customerInDb = _context.Customers.Single(c => c.Id == customer.Id);
+
+
+                // 20180324 see Comments ... 
+                // 20180324 TryUpdateModel(customerInDb);   // Updates all the properties in the model, but what about if only we need to update only some of the properties? ...
+                // TryUpdateModel as suggested by Microsoft is not a good practice because we need to
+                // type the properties names. Something that is not updated automatically in case
+                // a propertie(s) gets renamed as a result of Re-factoring ...
+                // 20180324 see Comments ... 
+                // 20180324 TryUpdateModel(customerInDb, "", new string[] { "Name", "Birthdate"}); // This can update only some of the properties ..
+
+                // Mosh recommends to update property by property as shown below ...
+                // Updating only some properties ...
+                customerInDb.Name = customer.Name;
+                customerInDb.Birthdate = customer.Birthdate;
+                customerInDb.MembershipTypeId = customer.MembershipTypeId;
+                customerInDb.IsSubscribedToNewsLetter = customer.IsSubscribedToNewsLetter;
+                // To replace the previous lines, we can use a library like "AutoMapper" that can match the names in form with the names in the DB
+                // using something like this ... Mapper.Map(customer, customerInDb);
+                // Also, as a complemet to Mapper we can define a new class that contains only the properties to be updated ...
+                // The new class can be something like "UpdateCustomerDto instead of using class "Customer") ..
+                // This AutoMapper can update safely only the properties that need to be updated ... 
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index","Customers");
         }
     }
 }
