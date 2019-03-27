@@ -52,7 +52,22 @@ namespace Vidly1.Controllers
             return View(customer);
         }
 
-       public ActionResult Edit(int id)
+        public ActionResult New()
+        {
+            // Initializing MembershipTypes used for the Form's DropDown ...
+            var membershipTypes = _context.MembershipTypes.ToList();
+
+            var viewModel = new CustomerFormViewModel
+            {
+                MembershipTypes = membershipTypes,
+            };
+
+            // Override the View to go to "CustomerForm" instead of using the default "New"...
+            // return View(viewModel);
+            return View("CustomerForm", viewModel);
+        }
+
+        public ActionResult Edit(int id)
         {
             // Getting data from DB ...
             var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
@@ -74,20 +89,6 @@ namespace Vidly1.Controllers
             return View("CustomerForm", viewModel);
         }
 
-        public ActionResult New()
-        {
-            // Initializing MembershipTypes used for the DropDown ...
-            var membershipTypes = _context.MembershipTypes.ToList();
-
-            var viewModel = new CustomerFormViewModel
-            {
-                MembershipTypes = membershipTypes,
-            };
-
-            // Override the View to go to "CustomerForm" instead of using the default "Edit"...
-            // return View(viewModel);
-            return View("CustomerForm", viewModel);
-        }
 
         [HttpPost]
         public ActionResult Save(Customer customer)

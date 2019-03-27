@@ -5,6 +5,11 @@
 }
 
 <h2>Customers</h2>
+
+<p>
+    @Html.ActionLink("NEW CUSTOMER", "New", "Customers", routeValues: null, htmlAttributes: new { id = "newCustomerLink", @class = "btn btn-primary" })
+</p>
+
 <table class="table table-bordered table-hover">
     <thead>
        <tr>

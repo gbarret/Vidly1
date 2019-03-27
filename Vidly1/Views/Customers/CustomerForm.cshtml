@@ -4,7 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>New Customer</h2>
+<!-- Get returned Action Name (New/Edit) -->
+<h2>@ViewContext.RouteData.GetRequiredString("action") Customer</h2>
 
 @using (Html.BeginForm("Save", "Customers"))
 {
@@ -22,10 +23,10 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Customer.MembershipTypeId)
         <!-- DropDownListFor params: (There other overloads)
-    (1)lambda expression that specifies the model property to be bind with the select element,
-    (2)specifies the items to show into dropdown list using SelectList (IENumerable Model.MembershipTypes, "Id", "Name"),
-    (3)optionLabel which will be the first item of dropdownlist ("Select Membership Type"0,
-    (4)Atributes -->
+        (1)lambda expression that specifies the model property to be bind with the select element,
+        (2)specifies the items to show into dropdown list using SelectList (IENumerable Model.MembershipTypes, "Id", "Name"),
+        (3)optionLabel which will be the first item of dropdownlist ("Select Membership Type"0,
+        (4)Atributes -->
         @Html.DropDownListFor(
                             m => m.Customer.MembershipTypeId,
                             new SelectList(Model.MembershipTypes, "Id", "Name"),
@@ -33,11 +34,13 @@
                             new { @class = "form-control"})
     </div>
 
-    <div class="checkbox">
+    <div class="form-check">
         <label>
             @Html.CheckBoxFor(m => m.Customer.IsSubscribedToNewsLetter, new { @class = "form-check-input" }) Subscribed to Newsletter
         </label>
     </div>
+
+    <!-- HiddenFor use to know if record already exists in the DB when deciding if New/Edit -->
     @Html.HiddenFor(m => m.Customer.Id)
     <button type="submit" class="btn btn-primary">Save</button>
 
