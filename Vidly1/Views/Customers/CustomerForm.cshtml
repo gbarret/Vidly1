@@ -9,15 +9,13 @@
 
 @using (Html.BeginForm("Save", "Customers"))
 {
+    @* @Html.ValidationSummary() *@  // Optional shows all the individual property errors or use next ...
+    @Html.ValidationSummary(true, "Please fix the following errors.")    // the "true" exclude the individual property errors ...
+
     <div class="form-group">
         @Html.LabelFor(m => m.Customer.Name)
         @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Customer.Birthdate)
-        <!-- 2019-03-22 Adding FormatString "{0:d MMM yyyy }" ...-->
-        @Html.TextBoxFor(m => m.Customer.Birthdate, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Customer.Name)
     </div>
 
     <div class="form-group">
@@ -32,6 +30,14 @@
                             new SelectList(Model.MembershipTypes, "Id", "Name"),
                             "Select Membership Type",
                             new { @class = "form-control"})
+        @Html.ValidationMessageFor(m => m.Customer.MembershipTypeId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Birthdate)
+        <!-- 2019-03-22 Adding FormatString "{0:d MMM yyyy }" ...-->
+        @Html.TextBoxFor(m => m.Customer.Birthdate, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Customer.Birthdate)
     </div>
 
     <div class="form-check">
@@ -42,7 +48,17 @@
 
     <!-- HiddenFor use to know if record already exists in the DB when deciding if New/Edit -->
     @Html.HiddenFor(m => m.Customer.Id)
+    // 20190331 - Antiforgery Token - to prevent control attack- CSRF: Cross-site Request Forgery  ...
+    // 20190331 We need to do 2 thins. 1st here, and 2nd is a DattaAnnotatiion in the controller in ActionResult Save() ..
+    // 20190331 This creates a token (__RequestVerificationToken that is like a secret code) as a hidden field in this form and as an encrypted cookie  in the user's browser ...
+    @Html.AntiForgeryToken()
+
     <button type="submit" class="btn btn-primary">Save</button>
 
+    <!-- Adding Client-side Validation -->
+    @section scripts
+    {
+        @Scripts.Render("~/bundles/jqueryval")  
+    }
 }
 

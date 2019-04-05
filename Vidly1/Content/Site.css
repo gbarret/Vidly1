@@ -22,3 +22,18 @@ select,
 textarea {
     max-width: 280px;
 }
+
+/* 20190327 from Mosh course ... Styling Validation Errors */
+/* 20190327 .field-validation-error & .input-validation-error (names get by looking F12 inspector in source code */
+
+.field-validation-error {
+    color: red;
+}
+
+.input-validation-error {
+    border: 2px solid red;
+}
+
+.validation-summary-errors {
+    color: red;
+}

@@ -32,7 +32,7 @@ namespace Vidly1.Controllers
             // thta happen usually in the View
 
             //var customers = _context.Customers.ToList(); // DbSet to get all the Customers from the DB ...
-            // Eager Loading: Need to load the relation Customer nad the MembershipType together ...
+            // Eager Loading: Need to load the relation Customer/MembershipType together ...
             var customers = _context.Customers.Include(c => c.MembershipType).ToList();
 
             return View(customers);
@@ -56,10 +56,15 @@ namespace Vidly1.Controllers
         {
             // Initializing MembershipTypes used for the Form's DropDown ...
             var membershipTypes = _context.MembershipTypes.ToList();
+            
 
             var viewModel = new CustomerFormViewModel
             {
-                MembershipTypes = membershipTypes,
+                // 20190331 Initializing (to default values) CustomerFormViewModel-Customer to be sure the hidden Customer.Id which is an int (will be initialized to 0)
+                // 20190331 in CustomerForm view is 0 for New customers which is used in the Save view to know if New or Edit ..
+                Customer = new Customer(),
+                MembershipTypes = membershipTypes
+                
             };
 
             // Override the View to go to "CustomerForm" instead of using the default "New"...
@@ -91,8 +96,25 @@ namespace Vidly1.Controllers
 
 
         [HttpPost]
+        // 20190331 ValidateAntiForgeryToken To avoid attack Cross-site Request Forgery. Use this DataAnnotation plus the Html.AntiforgeryToken() Helper in View ... ...
+        // 20190331 This make an automatic compration between the Hidden field in the view against the user's browser
+        // 20190331 cookie _RequestVerificationToken to validate if it is a Legitimate Request or an Attack. If differente the request is stopped ...
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Customer customer)
         {
+            // Check is object "customer" is valid based on the Data Annotations applied to properties of the "customer class" ...
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new CustomerFormViewModel
+                {
+                    Customer = customer,    // This is the data already entered in CustomerForm (New/Edit) ..
+                    MembershipTypes = _context.MembershipTypes.ToList()
+                };
+
+                return View("CustomerForm", viewModel);
+            }
+
+
             if (customer.Id == 0)
                 _context.Customers.Add(customer);
             else

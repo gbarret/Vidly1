@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
+
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -46,8 +47,10 @@ namespace Vidly1.Controllers
         public ActionResult New()
         {
             // Initializing Genres used for the Form's DropDown ...
-            var viewModel = new MovieNewViewModel
+            var viewModel = new MovieFormViewModel
             {
+                // 20190331 Initializing Movie in order to have default values like Id = 0 used in view Save() ...
+                // 20190401 ... Movie = new Movie(),
                 Genres = _context.Genres.ToList()
             };
 
@@ -64,10 +67,12 @@ namespace Vidly1.Controllers
             if (movie == null)
                 return HttpNotFound();
 
-            var viewModel = new MovieNewViewModel
+            // 20190401 ... var viewModel = new MovieFormViewModel
+            // Passing the object movie when instatiating the viewModel. Required now that properties are defined there ...
+            var viewModel = new MovieFormViewModel(movie)
             {
                 Genres = _context.Genres.ToList(),
-                Movie = movie
+                // 20190401 ...Movie = movie
             };
 
             // Override the View to go to "MovieForm" instead of using the default "Edit"...
@@ -75,8 +80,23 @@ namespace Vidly1.Controllers
             return View("MovieForm", viewModel);
         }
 
+        [ValidateAntiForgeryToken]  // Preventing Cross-Site Request Forgery (Also, add hidden Field in View)...
         public ActionResult Save(Movie movie)
         {
+            if (!ModelState.IsValid)
+            {
+                // 20190401 ... var viewModel = new MovieFormViewModel
+                // Passing the object movie when instatiating the viewModel. Required now that properties are defined there ...
+                var viewModel = new MovieFormViewModel(movie)
+                {
+                    // 20190401 ... Movie = movie,
+                    Genres = _context.Genres.ToList()
+                };
+
+                return View("MovieForm", viewModel);
+            }
+                
+
             if (movie.Id == 0)
                 _context.Movies.Add(movie);
             else
@@ -86,7 +106,8 @@ namespace Vidly1.Controllers
                 movieInDb.Name = movie.Name;
                 movieInDb.ReleaseDate = movie.ReleaseDate;
                 movieInDb.GenreId = movie.GenreId;
-                movieInDb.NumberInStock = movie.NumberInStock; 
+                movieInDb.NumberInStock = movie.NumberInStock;
+                movieInDb.DateModified = movie.DateModified;    // This is updated in the MovieFormViewModel.cs ....
             }
 
             _context.SaveChanges();
