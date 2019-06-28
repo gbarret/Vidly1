@@ -29,13 +29,15 @@ namespace Vidly1.Controllers
         public ActionResult Index()
         {
             // Deferred Execution we are no querying the DB until we Iterate de customer's object
-            // thta happen usually in the View
+            // that happen usually in the View
 
-            //var customers = _context.Customers.ToList(); // DbSet to get all the Customers from the DB ...
+            // var customers = _context.Customers.ToList(); // DbSet to get all the Customers from the DB ...
             // Eager Loading: Need to load the relation Customer/MembershipType together ...
-            var customers = _context.Customers.Include(c => c.MembershipType).ToList();
+            // 20190419 Replacing list with an Ajax call from the view ...
+            // 20190419 var customers = _context.Customers.Include(c => c.MembershipType).ToList();
 
-            return View(customers);
+            // 20190419 return View(customers);
+            return View();
         }
 
         public ActionResult Details(int Id)

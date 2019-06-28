@@ -1,0 +1,122 @@
+﻿@model IEnumerable<Vidly1.Models.Movie> 
+
+@{
+    ViewBag.Title = "Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Movies</h2>
+
+<p>
+    @Html.ActionLink("NEW MOVIE", "New", "Movies", routeValues: null, htmlAttributes: new { id = "newMovieLink", @class = "btn btn-primary" })
+</p>
+
+<p id="result"></p>
+<table class="table table-bordered table-hover" id="tblMovies">
+    <thead>
+        <tr>
+            <!--<td>Movie</td>
+            <td>Genre</td>
+            <td>Delete</td>-->
+            <th class="th-sm">Movie</th>
+            <th class="th-sm">Genre</th>
+            <th class="th-sm">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* 20190506 Replacing this with jQuery - Plugin DataTable ....
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@Html.ActionLink(m.Name, "Edit", new { id = m.Id })</td>
+                <td>@m.Genre.Name</td>
+                <td><button class="btn-link js-delete">Delete</button></td>
+            </tr>
+        }*@
+    </tbody>
+</table>
+
+@section Scripts{
+    <script>
+        $(document).ready(function(){           
+            //Get data from server ...
+            /* 20190430 Replacing simple Ajax with DataTabe (jQuery Plugin) ...
+            $.ajax({
+                url: "api/movies"
+            }).done(function (data) {
+                $("#result").html("Hola");
+                console.log("Sample of data:", data);
+            });*/
+
+            var table = $("#tblMovies").DataTable({
+                ajax: {
+                    url: "/api/movies",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, movie) {
+                            return "<a href='/movies/edit/" + movie.id + "'>" + movie.name + "</>";
+                        }
+                    },
+                    {
+                        data: "genre.name",
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-movie-id=" + data + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
+
+            /* 20190513 replacing this with Bootbox.js (Boostrap Modals) ...
+            $("#tblMovies").on('click', '.js-delete', function (event) {
+                var button = $(this);
+                if (confirm("Are you sure you want to remove record " + button.attr("data-movie-id") + "?")) {
+                    $.ajax({
+                        url: '/api/movies/' + button.attr("data-movie-id"),
+                        type: 'DELETE',
+                        success: function (result) {
+                            alert("Record" + button.attr("data-movie-id") + " was removed!");
+                            table.row(button.parents("tr")).remove().draw();    // Redisplaying the data after removing record
+                        }
+                        });
+                }
+            });
+            */
+
+            // 20190513 Using Bootbox.js (Bootstrap Modals) ...
+            // bootbox.alert("This is a Bootbox Alert!");
+            // bootbox.alert("Hello World!", function () {
+            // console.log("Alert Callback");
+            /* bootbox.confirm("Are you sure you want to remove record?",
+                function () {
+                    console.log("Confirm Callback");
+            });*/
+
+
+            $("#tblMovies").on('click', '.js-delete', function (event) {
+                var button = $(this);
+                bootbox.confirm("Are you sure you want to remove record?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/movies/" + button.attr("data-movie-id"),
+                            type: "DELETE",
+                            success: function (result) {
+                                //console.log("Ajax Success" + result);
+                                table.row(button.parents("tr")).remove().draw();    // Redisplaying the data after removing record
+                            }
+                        }); // End Ajax ...
+                    }   // End if ...
+                }); // End bootbox ...
+            });
+        });
+
+
+    </script>
+}
+
+  

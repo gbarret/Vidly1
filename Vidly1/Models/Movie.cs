@@ -30,6 +30,8 @@ namespace Vidly1.Models
         [Required]
         public byte NumberInStock { get; set; }
 
+        public byte NumberAvailable { get; set; }
+
         public Genre Genre { get; set; }    // Navigation Property
 
         [Display(Name="Genre")]
@@ -38,7 +40,7 @@ namespace Vidly1.Models
 
         public Movie()
         {
-            // 20190402 Define Default Value ... There are other e=ways to do this, But I do not now, at this time, whuich oine is the best one ..
+            // 20190402 Define Default Value ... There are other ways to do this, But I do not now, at this time, which one is the best one ..
             this.DateAdded = DateTime.UtcNow;   // Initializing for new records ...
             // DateModified has to be updated in the Edit???
             this.DateModified = DateTime.UtcNow;// Initializing for new records ...

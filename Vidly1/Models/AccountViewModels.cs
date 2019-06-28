@@ -3,41 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Vidly1.Models
 {
-    public class ExternalLoginConfirmationViewModel
-    {
-        [Required]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-    }
-
-    public class ExternalLoginListViewModel
-    {
-        public string ReturnUrl { get; set; }
-    }
-
-    public class SendCodeViewModel
-    {
-        public string SelectedProvider { get; set; }
-        public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
-        public string ReturnUrl { get; set; }
-        public bool RememberMe { get; set; }
-    }
-
-    public class VerifyCodeViewModel
-    {
-        [Required]
-        public string Provider { get; set; }
-
-        [Required]
-        [Display(Name = "Code")]
-        public string Code { get; set; }
-        public string ReturnUrl { get; set; }
-
-        [Display(Name = "Remember this browser?")]
-        public bool RememberBrowser { get; set; }
-
-        public bool RememberMe { get; set; }
-    }
+    // 20190605 Moving ExternalLoginConfirmationViewModel to ExternalLoginViewModel.cs file ...
+    // 20190605 Moving SendCodeViewModel to ExternalLoginViewModel.cs file ...
+    // 20190605 Moving VerifyCodeViewModel to ExternalLoginViewModel.cs file ...
 
     public class ForgotViewModel
     {
@@ -64,6 +32,15 @@ namespace Vidly1.Models
 
     public class RegisterViewModel
     {
+        // 20190528 Adding Profile data. Including DrivingLicense ...
+        [Required]
+        [Display(Name = "Driving License")]
+        public string DrivingLicense { get; set; }
+
+        // 201900605 Adding Profile data. Including Phone ...
+        [Required]
+        public string Phone { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

@@ -54,9 +54,10 @@ namespace Vidly1
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            // 20190531 Adding Social Logings ....Facebook ... App Vidly for local Https host ...
+            app.UseFacebookAuthentication(
+               appId: "392242631633139",
+               appSecret: "f0c6ffbd4f669255df92f5cfe9f0e070");
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{

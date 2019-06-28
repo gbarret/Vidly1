@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Vidly1.Models;
@@ -139,7 +140,7 @@ namespace Vidly1.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            return View();  // This just display the Registration's form ...
         }
 
         //
@@ -151,10 +152,27 @@ namespace Vidly1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                // 20190528 Adding Profile Data. Including DrivingLicense ...
+                // 20190605 Adding Phone ...
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    DrivingLicense = model.DrivingLicense,
+                    Phone = model.Phone
+                };
+
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    // 20190519 Temp Code ...
+                    // 20190519 Next 4 lines used to create a role and assin it to a next resgistered user ...
+                    // 20190519 To be used as a base for the DB Migration to SeedUsers for roles and users ...
+                    // 20190519 ... var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
+                    // 20190519 ... var roleManager = new RoleManager<IdentityRole>(roleStore);
+                    // 20190519 ... await roleManager.CreateAsync(new IdentityRole("CanManageMovies"));
+                    // 20190519 ... await UserManager.AddToRoleAsync(user.Id, "CanManageMovies");
+                    
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -279,6 +297,7 @@ namespace Vidly1.Controllers
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             // Request a redirect to the external login provider
+    
             return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
         }
 
@@ -341,9 +360,13 @@ namespace Vidly1.Controllers
                 case SignInStatus.Failure:
                 default:
                     // If the user does not have an account, then prompt the user to create an account
+                    ViewBag.LoginInfo = loginInfo;    // 20190617 by GBS for testing ...
+                    ViewBag.Result = result;    // 20190617 by GBS for testing ...
+                    ViewBag.SignInStatus_Failure = SignInStatus.Failure;    // 20190617 by GBS for testing ...
+
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                    return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = loginInfo.Email });
             }
         }
 
@@ -352,13 +375,14 @@ namespace Vidly1.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
+        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string returnUrl)
         {
+            ViewBag.UserAuthenticatedTrueFalse = User.Identity.IsAuthenticated; // 20190614 GBS testing this page ..
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Manage");
             }
-
+            ViewBag.ModelState_IsValid = ModelState.IsValid; // 20190623 GBS testing this page ...
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
@@ -367,7 +391,13 @@ namespace Vidly1.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    DrivingLicense = model.DrivingLicense,   // 20190602 Adding Profile Data ...
+                    Phone = model.Phone                     // 20190611 Adding Profile Data ...
+                };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -382,6 +412,7 @@ namespace Vidly1.Controllers
             }
 
             ViewBag.ReturnUrl = returnUrl;
+            
             return View(model);
         }
 

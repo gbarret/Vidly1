@@ -16,10 +16,6 @@ namespace Vidly1.Models
         [Required(ErrorMessage = "Please enter customer's name.")]  // Overriden Default Error Message ...
         [StringLength(255)]
         public string Name { get; set; }
-
-        [Display(Name = "Date of Birth")]
-        [Min18YearsIfAMember]   // This is Custom validation (defined in Models/Min18YearIfAMember.cs class) ...
-        public DateTime? Birthdate { get; set; }
  
         public bool IsSubscribedToNewsLetter { get; set; }
         public MembershipType MembershipType { get; set; }  // This is a Navigation Property
@@ -29,5 +25,8 @@ namespace Vidly1.Models
         // To make this property "optional" then use "?" becoming "byte?" that means "Nullable Byte" ...
         public byte MembershipTypeId { get; set; }  // Foreign Key
 
+        [Display(Name = "Date of Birth")]
+        [Min18YearsIfAMember]   // This is Custom validation (defined in Models/Min18YearIfAMember.cs class) ...
+        public DateTime? Birthdate { get; set; }
     }
 }

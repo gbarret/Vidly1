@@ -21,6 +21,7 @@
                     <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", routeValues: null, htmlAttributes: new { id = "homeLink", @class = "nav-link" })</li>
                     <li class="nav-item">@Html.ActionLink("About", "About", "Home", routeValues: null, htmlAttributes: new { id = "aboutLink", @class = "nav-link" })</li>
                     <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", routeValues: null, htmlAttributes: new { id = "contactLink", @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("New Rental", "New", "Rentals", routeValues: null, htmlAttributes: new { id = "rentalsLink", @class = "nav-link" })</li>
                     <li class="nav-item">@Html.ActionLink("Customers", "Index", "Customers", routeValues: null, htmlAttributes: new { id = "customersLink", @class = "nav-link" })</li>
                     <li class="nav-item">@Html.ActionLink("Movies", "Index", "Movies", routeValues: null, htmlAttributes: new { id = "moviesLink", @class = "nav-link" })</li>
                 </ul>
@@ -37,8 +38,10 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    @* 20190429 Consolidating jquery & bootstrap into a new bundle "lib" *@
+    @* @Scripts.Render("~/bundles/jquery") *@
+    @* @Scripts.Render("~/bundles/bootstrap") *@
+    @Scripts.Render("~/bundles/lib")
     @RenderSection("scripts", required: false)
 </body>
 </html>

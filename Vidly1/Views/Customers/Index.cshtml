@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Vidly1.Models.Customer>
 @{
-        ViewBag.Title = "Customer Details";
-        Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Customer Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Customers</h2>
@@ -10,23 +10,87 @@
     @Html.ActionLink("NEW CUSTOMER", "New", "Customers", routeValues: null, htmlAttributes: new { id = "newCustomerLink", @class = "btn btn-primary" })
 </p>
 
-<table class="table table-bordered table-hover">
+<table id="customers" class="table table-bordered table-hover">
     <thead>
-       <tr>
-        <th>Customer</th>
-        <th>Discount Rate</th>
-       </tr>
+        <tr>
+            <th>Customer</th>
+            <th>Membership Type</th>
+            <th>Delete</th>
+        </tr>
     </thead>
     <tbody>
-        @foreach(var customer in Model)
-        {
-            <tr>
-                <!-- 2019-03-22 Replacing Action "Details" with "Edit" -->
-                <td>@Html.ActionLink(customer.Name, "Edit", new { id = customer.Id })</td>
-                <td>@customer.MembershipType.Name</td>
-            </tr>
-
-        }
+        <tr>
+            <td>xxx</td>
+            <td>xxx</td>
+            <td>xxx</td>
+        </tr>
     </tbody>
 </table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            // 2019-04-29 Using a jQuery DataTable ...
+            var table = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, customer) {
+                            return "<a href='/customers/edit/" + customer.id + "'>" + customer.name + "</>";
+                        }
+                    },
+                    {
+                        data: "membershipType.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
+
+
+            //$("#customers .js-delete").on("click", function () {
+            // 20190425 Improving memory by removing class .js-delete from selector where each single button has a handler in memory
+            // 20190425 Replacing with a single handler and filer (.js-delete) in the click event ...
+            $("#customers").on("click", ".js-delete", function () {
+                var button = $(this);
+                /*if (confirm("Are you sure you want to delete this customer?")) {
+                    $.ajax({
+                        url: "/api/customers/" + button.attr("data-customer-id"),
+                        method: "DELETE",
+                        success: function () {
+                            //console.log("Success");
+                            button.parents("tr").remove();
+                        }
+                    });
+
+                }*/
+                // 20190423 Using bootbox.js library ... confirm("messag", callBack-function)
+                bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/customers/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                //console.log("Success");
+                                // 20190501 ... button.parents("tr").remove();
+                                table.row(button.parents("tr")).remove().draw();    // DataTable methods to remove row from the internal list ...
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>
+
+}
 

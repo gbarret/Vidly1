@@ -7,6 +7,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Vidly1.ActionFilters;
 using Vidly1.Models;
 using Vidly1.ViewModels;
 
@@ -29,12 +30,19 @@ namespace Vidly1.Controllers
         }
 
         // GET: Movies
+        [LogActionFilter]   // 20190424 Using Action Filters ...
         public ActionResult Index()
         {
             //var movies = _context.Movies.ToList();
             var movies = _context.Movies.Include(c => c.Genre).ToList();
 
-            return View(movies);
+            // 20190519 ... return View(movies);    // This renders the de Index.cshtml ...
+
+            // 20190520 Using a const ... if (User.IsInRole("CanManageMovies"))
+            if (User.IsInRole(RoleName.CanManageMovies))
+                    return View("List", movies);    // 20190519 This renders the de List.cshtml...
+            // else ...
+            return View("ReadOnlyList", movies);    // 20190519 This renders the de ReadOnlyList.cshtml...
         }
 
         public ActionResult Details(byte Id)
@@ -44,6 +52,8 @@ namespace Vidly1.Controllers
             return View(movie);
         }
 
+        // 20190519 using a const ... [Authorize(Roles = "CanManageMovies")]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             // Initializing Genres used for the Form's DropDown ...

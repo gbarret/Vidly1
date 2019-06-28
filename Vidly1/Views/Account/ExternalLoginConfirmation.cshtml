@@ -1,8 +1,18 @@
-﻿@model Vidly1.Models.ExternalLoginConfirmationViewModel
+﻿@model Vidly1.Models.ExternalLoginViewModel
 @{
     ViewBag.Title = "Register";
 }
 <h2>@ViewBag.Title.</h2>
+<!-- 20190614 GBS to testing this page. Start -->
+<h5>UserAuthenticatedTrueFalse: @ViewBag.UserAuthenticatedTrueFalse</h5>
+<h5>Result from Facebook: @ViewBag.Result</h5>
+<h5>Login Provider: @ViewBag.LoginProvider</h5>
+<h5>Login Info: @ViewBag.LoginInfo</h5>
+<h5>ModelState_IsValid: @ViewBag.ModelState_IsValid</h5>
+<h5>Model Email: @Model.Email</h5>
+
+<!-- 20190614 GBS to testing this page . End -->
+
 <h3>Associate your @ViewBag.LoginProvider account.</h3>
 
 @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
@@ -24,9 +34,23 @@
             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
         </div>
     </div>
+    <!-- 20190528 Adding Profile Data. Including DrivingLicense ... -->
+    <div class="form-group">
+        @Html.LabelFor(m => m.DrivingLicense, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.DrivingLicense, new { @class = "form-control" })
+        </div>
+    </div>
+    <!-- 201900605 Adding Profile Data. Including Phone ... -->
+    <div class="form-group">
+        @Html.LabelFor(m => m.Phone, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+        </div>
+    </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
+            <input type="submit" class="btn btn-primary" value="Register" />
         </div>
     </div>
 }

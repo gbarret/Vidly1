@@ -1,0 +1,29 @@
+﻿
+@model dynamic
+@{
+    ViewBag.Title = "New Rental Form";
+    // 20190627 We do not need to specify this on each form ... Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Rental Form</h2>
+
+<!--
+   20190627 Because we are going to use an API to add new rentals:
+    1.- We are not using a HTML form because it will creta a traditional form
+    2.- Instead we are using a RaW HTML
+    3.- We can use helper method Ajax.BeginForm() that is used when calling an action in MVC Controller, not API Controllers
+    But using it for an API requires a complex call, for this reason we are a single form ...
+-->
+<form>
+    <div class="form-group">
+        <label>Customer</label>
+        <input type="text" value="" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Movie</label>
+        <input type="text" value="" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary">Submit</button>
+</form>
